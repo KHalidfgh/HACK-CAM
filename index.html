@@ -46,11 +46,11 @@
             sendButton.style.display = 'inline';
         });
 
-        // إرسال الصورة إلى الخادم
+        // إرسال الصورة إلى الخادم (تأكد من إدخال رابط الخادم الصحيح)
         sendButton.addEventListener('click', () => {
             const imageData = canvas.toDataURL('image/png');
 
-            fetch('https://example.com/upload', { // استبدل بالرابط الفعلي لخادمك
+            fetch('https://example.com/upload', { // استبدل بهذا رابط الخادم الخاص بك
                 method: 'POST',
                 body: JSON.stringify({ image: imageData }),
                 headers: { 'Content-Type': 'application/json' }
