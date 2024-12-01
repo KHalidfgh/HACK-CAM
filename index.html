@@ -3,62 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التقاط صورة</title>
+    <title>التقاط صورة وإرسالها</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        video {
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #000;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>السلام عليكم</h1>
-    <p>يرجى السماح بالكاميرا لالتقاط الصورة.</p>
-
-    <!-- فيديو -->
+    <h1>التقاط صورة وإرسالها</h1>
     <video id="video" autoplay></video>
-    <br>
-    <!-- زر التقاط الصورة -->
     <button id="capture">التقاط الصورة</button>
-    <br>
-    <!-- مساحة عرض الصورة -->
     <canvas id="canvas" style="display:none;"></canvas>
-    <br>
-    <!-- زر إرسال الصورة -->
-    <button id="send" style="display:none;">إرسال الصورة</button>
 
     <script>
-        // تشغيل الكاميرا
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const captureButton = document.getElementById('capture');
-        const sendButton = document.getElementById('send');
 
+        // طلب الوصول إلى الكاميرا
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
+            .then((stream) => {
                 video.srcObject = stream;
             })
-            .catch(err => {
-                alert('حدث خطأ: تأكد من السماح بالكاميرا');
+            .catch((err) => {
+                alert('خطأ: لم يتمكن الموقع من الوصول إلى الكاميرا');
+                console.error('Error accessing camera:', err);
             });
 
-        // التقاط الصورة
+        // التقاط الصورة وإرسالها إلى الخادم
         captureButton.addEventListener('click', () => {
             const context = canvas.getContext('2d');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.style.display = 'block';
-            sendButton.style.display = 'inline';
-        });
 
-        // إرسال الصورة إلى الخادم (تأكد من إدخال رابط الخادم الصحيح)
-        sendButton.addEventListener('click', () => {
             const imageData = canvas.toDataURL('image/png');
-
-            fetch('https://example.com/upload', { // استبدل بهذا رابط الخادم الخاص بك
-                method: 'POST',
-                body: JSON.stringify({ image: imageData }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.text())
-            .then(data => alert('تم إرسال الصورة بنجاح: ' + data))
-            .catch(error => alert('حدث خطأ أثناء الإرسال: ' + error));
+            sendImageToServer(imageData);
         });
+
+        function sendImageToServer(imageData) {
+            fetch('https://your-replit-username.repl.co/upload', { // استبدل هذا الرابط برابط خادم Replit الخاص بك
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: imageData }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('تم إرسال الصورة بنجاح!');
+                } else {
+                    alert('فشل في إرسال الصورة.');
+                }
+            })
+            .catch(error => {
+                console.error('خطأ أثناء الإرسال:', error);
+                alert('حدث خطأ أثناء الإرسال.');
+            });
+        }
     </script>
 </body>
 </html>
